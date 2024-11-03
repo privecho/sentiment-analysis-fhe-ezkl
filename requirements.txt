@@ -1,0 +1,7 @@
+concrete-ml==1.7.0
+gradio==3.50.2
+pandas==2.0.3
+transformers==4.36.0 
+jupyter==1.0.0
+urllib3==1.25.4
+more-itertools==10.5.0

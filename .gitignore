@@ -1,0 +1,6 @@
+tmp/
+.venv
+.fhe_keys
+*.pyc
+local_datasets/
+.vscode/
