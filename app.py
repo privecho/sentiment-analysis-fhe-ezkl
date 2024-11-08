@@ -126,6 +126,12 @@ def run_fhe(user_id):
     )
     encrypted_prediction = base64.b64decode(response.json()["encrypted_prediction"])
 
+    response = requests.post(
+        "http://localhost:8002/get_zk_proof", data=json.dumps(query), headers=headers
+    )
+    proof_path = base64.b64decode(response.json()["proof_path"])
+    print(f"proof_path: {proof_path}")
+
     # Save encrypted_prediction in a file, since too large to pass through regular Gradio
     # buttons, https://github.com/gradio-app/gradio/issues/1877
     numpy.save(f"tmp/tmp_encrypted_prediction_{user_id}.npy", encrypted_prediction)

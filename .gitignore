@@ -5,3 +5,4 @@ tmp/
 local_datasets/
 .vscode/
 /.idea
+/zkml_data

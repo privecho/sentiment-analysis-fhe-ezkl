@@ -5,3 +5,5 @@ transformers==4.36.0
 jupyter==1.0.0
 urllib3==1.25.4
 more-itertools==10.5.0
+ezkl==11.2.2
+httpx[socks]
