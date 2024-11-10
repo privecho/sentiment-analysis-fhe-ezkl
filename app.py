@@ -38,6 +38,7 @@ transformer_vectorizer = TransformerVectorizer()
 def clean_tmp_directory():
     # Create tmp directory if it doesn't exist
     Path(".fhe_keys/").mkdir(exist_ok=True)
+    Path("tmp/").mkdir(exist_ok=True)
 
     # Allow 20 user keys to be stored.
     # Once that limitation is reached, deleted the oldest.
