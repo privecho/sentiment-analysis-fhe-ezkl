@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  sentiment-analysis:
+    build: .
+    ports:
+      - "7860:7860"
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: python app.py

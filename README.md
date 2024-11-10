@@ -8,7 +8,7 @@ sdk_version: 4.44.0
 app_file: app.py
 pinned: true
 tags: [FHE, PPML, privacy, privacy preserving machine learning, homomorphic encryption, security]
-python_version: 3.10.11
+python_version: 3.9.6
 ---
 
 # Sentiment Analysis With FHE

@@ -404,4 +404,4 @@ with demo:
     gr.Markdown(
         "The app was built with [Concrete-ML](https://github.com/zama-ai/concrete-ml), a Privacy-Preserving Machine Learning (PPML) open-source set of tools by [Zama](https://zama.ai/). Try it yourself and don't forget to star on Github &#11088;."
     )
-demo.launch(share=False, server_port=10003, server_name="0.0.0.0")
+demo.launch(share=False)
