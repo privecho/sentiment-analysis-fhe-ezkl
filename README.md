@@ -45,18 +45,6 @@ can be found in the [SentimentClassification notebook](SentimentClassification.i
 anvil -p 3030
 ```
 
-### Launch zkml server
-
-```bash
-source .venv/bin/activate
-python3 zkml_encrypted.py
-```
-
-```bash
-source .venv/bin/activate
-python3 zkml_non_encrypted.py
-```
-
 ### Launch the app locally
 
 - In a terminal:
