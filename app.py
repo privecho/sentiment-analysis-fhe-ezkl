@@ -16,7 +16,8 @@ import time
 # This repository's directory
 REPO_DIR = Path(__file__).parent
 
-# subprocess.Popen(["anvil", "-p", "3030"], cwd=REPO_DIR)
+# Download required data files
+subprocess.Popen(["bash", "./download_data.sh"], cwd=REPO_DIR)
 subprocess.Popen(["uvicorn", "server:app", "--port", "8000"], cwd=REPO_DIR)
 subprocess.Popen(["uvicorn", "zkml_non_encrypted:app", "--port", "8001"], cwd=REPO_DIR)
 subprocess.Popen(["uvicorn", "zkml_encrypted:app", "--port", "8002"], cwd=REPO_DIR)
