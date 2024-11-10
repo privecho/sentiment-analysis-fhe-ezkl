@@ -36,10 +36,6 @@ transformer_vectorizer = TransformerVectorizer()
 
 
 def clean_tmp_directory():
-    # Create tmp directory if it doesn't exist
-    Path(".fhe_keys/").mkdir(exist_ok=True)
-    Path("tmp/").mkdir(exist_ok=True)
-
     # Allow 20 user keys to be stored.
     # Once that limitation is reached, deleted the oldest.
     path_sub_directories = sorted([f for f in Path(".fhe_keys/").iterdir() if f.is_dir()], key=os.path.getmtime)
@@ -212,6 +208,10 @@ def get_zk_proof_encrypted(user_id):
     result = response.json()
     return result["output"], result["proof"], result["verify_contract_addr"]
 
+
+# Create tmp directory if it doesn't exist
+Path(".fhe_keys/").mkdir(exist_ok=True)
+Path("tmp/").mkdir(exist_ok=True)
 
 demo = gr.Blocks()
 
