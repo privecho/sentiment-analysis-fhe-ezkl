@@ -2,6 +2,7 @@
 # https://colab.research.google.com/github/zkonduit/ezkl/blob/main/examples/notebooks/simple_demo_all_public.ipynb
 import pickle
 import struct
+import uuid
 
 import numpy as np
 import pandas as pd
@@ -23,6 +24,7 @@ app = FastAPI()
 
 evaluation_key = None
 
+
 # Defines the model
 class AIWordsModel(nn.Module):
     def __init__(self):
@@ -31,8 +33,6 @@ class AIWordsModel(nn.Module):
         print("init ZK AIWordsModel")
 
         # Load the model
-        # self.fhe_model = FHEModelServer("deployment/sentiment_fhe_model")
-
         self.model = XGBClassifier()
         train = pd.read_csv("./local_datasets/twitter-airline-sentiment/Tweets.csv", index_col=0)
         text_X = train["text"]
@@ -48,7 +48,8 @@ class AIWordsModel(nn.Module):
         text_X_train, text_X_test, y_train, y_test = train_test_split(
             text_X, y, test_size=0.1, random_state=42
         )
-        X_train_transformer = self.text_to_tensor(text_X_train.tolist(), self.transformer_model, self.tokenizer, self.device)
+        X_train_transformer = self.text_to_tensor(text_X_train.tolist(), self.transformer_model, self.tokenizer,
+                                                  self.device)
 
         with open("deployment/serialized_model_zkml", 'rb') as file:  # Open in binary read mode
             loaded_data = pickle.load(file)
@@ -67,13 +68,13 @@ class AIWordsModel(nn.Module):
 
         prediction = self.best_model2.predict_proba(x, fhe="execute")
         print(f"prediction: {prediction}")
-        
-        prediction_array = np.frombuffer(prediction, dtype=np.uint8)
-        byte_tensor = torch.tensor(list(prediction_array), dtype=torch.uint8)
 
-        print(f"tensor_output: {byte_tensor}")
-        return byte_tensor
-    
+        prediction_tensor = torch.tensor(prediction, dtype=torch.float32)
+        prediction_tensor = prediction_tensor.squeeze()  # Remove extra dimensions if any
+
+        print(f"tensor_output: {prediction_tensor}")
+        return prediction_tensor
+
     # Function to convert text to tensor
     def text_to_tensor(self, list_text, transformer_model, tokenizer, device):
         tokenized_text = [tokenizer.encode(text, return_tensors="pt") for text in list_text]
@@ -86,18 +87,17 @@ class AIWordsModel(nn.Module):
 
         return np.concatenate(output_hidden_states_list, axis=0)
 
+
 class ZKProofRequest(BaseModel):
     text: str
-    evaluation_key: str
+
 
 circuit = AIWordsModel()
 
+
 @app.post("/get_zk_proof")
 async def get_zk_proof(request: ZKProofRequest):
-    global evaluation_key
-    evaluation_key = request.evaluation_key
-
-    folder_path = "zkml_data"
+    folder_path = f"zkml_non_encrypted/{str(uuid.uuid4())}"
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
 
@@ -244,8 +244,8 @@ async def get_zk_proof(request: ZKProofRequest):
     assert res is True
     print("verified on chain")
 
-    return {"proof_path": proof_path, "verify_contract_addr": verify_contract_addr}
+    # Read proof file content
+    with open(proof_path, 'rb') as f:
+        proof_content = base64.b64encode(f.read()).decode('utf-8')
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    return {"output": output_data, "proof": proof_content, "verify_contract_addr": verify_contract_addr}

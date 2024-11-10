@@ -1,6 +1,7 @@
 # https://docs.ezkl.xyz/
 # https://colab.research.google.com/github/zkonduit/ezkl/blob/main/examples/notebooks/simple_demo_all_public.ipynb
 import struct
+import uuid
 
 import numpy as np
 from torch import nn
@@ -15,8 +16,8 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-
 evaluation_key = None
+
 
 # Defines the model
 class AIModel(nn.Module):
@@ -28,23 +29,18 @@ class AIModel(nn.Module):
 
     def forward(self, x):
         print(f"forward input: {x}")
-        print(f"forward input len: {len(x)}")
 
-        x = x[0]
         # Convert to bytes
+        x = x[0]
         _encrypted_encoding = x.numpy().tobytes()
-        print(f"forward encrypted_encoding: {_encrypted_encoding[:100]}")
-        print(f"forward evaluation_key: {evaluation_key[:100]}")
         prediction = self.fhe_model.run(_encrypted_encoding, evaluation_key)
-        print(f"forward prediction: {prediction[:100]}")
+        print(f"forward prediction hex: {prediction.hex()}")
 
-        prediction_array = np.frombuffer(prediction, dtype=np.uint8)
-        print(f"prediction_array len: {len(prediction_array)}")
-        print(f"prediction_array: {prediction_array}")
-        byte_tensor = torch.tensor(list(prediction_array), dtype=torch.uint8)
-
+        byte_tensor = torch.tensor(list(prediction), dtype=torch.uint8)
         print(f"tensor_output: {byte_tensor}")
+
         return byte_tensor
+
 
 class ZKProofRequest(BaseModel):
     encrypted_encoding: str
@@ -52,6 +48,7 @@ class ZKProofRequest(BaseModel):
 
 
 circuit = AIModel()
+
 
 @app.post("/get_zk_proof")
 async def get_zk_proof(request: ZKProofRequest):
@@ -61,7 +58,7 @@ async def get_zk_proof(request: ZKProofRequest):
     global evaluation_key
     evaluation_key = request.evaluation_key
 
-    folder_path = "zkml_data"
+    folder_path = f"zkml_encrypted/{str(uuid.uuid4())}"
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
 
@@ -77,7 +74,6 @@ async def get_zk_proof(request: ZKProofRequest):
     output_path = os.path.join(f'{folder_path}/output.json')
 
     # After training, export to onnx (network.onnx) and create a data file (input.json)
-    # 如果 x 不是张量，先转换为张量
     x = torch.tensor(list([request.encrypted_encoding]), dtype=torch.uint8)
 
     # Flips the neural net into inference mode
@@ -209,8 +205,8 @@ async def get_zk_proof(request: ZKProofRequest):
     assert res is True
     print("verified on chain")
 
-    return {"proof_path": proof_path, "verify_contract_addr": verify_contract_addr}
+    # Read proof file content
+    with open(proof_path, 'rb') as f:
+        proof_content = base64.b64encode(f.read()).decode('utf-8')
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8002)
+    return {"output": output_data, "proof": proof_content, "verify_contract_addr": verify_contract_addr}

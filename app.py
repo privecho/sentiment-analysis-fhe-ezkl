@@ -1,7 +1,6 @@
 """A gradio app. that runs locally (analytics=False and share=False) about sentiment analysis on tweets."""
 
 import gradio as gr
-from requests import head
 from transformer_vectorizer import TransformerVectorizer
 from concrete.ml.deployment import FHEModelClient
 import numpy
@@ -17,10 +16,12 @@ import time
 # This repository's directory
 REPO_DIR = Path(__file__).parent
 
-subprocess.Popen(["uvicorn", "server:app"], cwd=REPO_DIR)
+subprocess.Popen(["uvicorn", "server:app", "--port", "8000"], cwd=REPO_DIR)
+subprocess.Popen(["uvicorn", "zkml_non_encrypted:app", "--port", "8001"], cwd=REPO_DIR)
+subprocess.Popen(["uvicorn", "zkml_encrypted:app", "--port", "8002"], cwd=REPO_DIR)
 
-# Wait 5 sec for the server to start
-time.sleep(5)
+# Wait 30 sec for the server to start
+time.sleep(30)
 
 # Encrypted data limit for the browser to display
 # (encrypted data is too large to display in the browser)
@@ -32,6 +33,7 @@ print("Loading the transformer model...")
 
 # Initialize the transformer vectorizer
 transformer_vectorizer = TransformerVectorizer()
+
 
 def clean_tmp_directory():
     # Allow 20 user keys to be stored.
@@ -60,10 +62,9 @@ def keygen():
     print("Initializing FHEModelClient...")
 
     # Let's create a user_id
-    user_id = numpy.random.randint(0, 2**32)
+    user_id = numpy.random.randint(0, 2 ** 32)
     fhe_api = FHEModelClient(FHE_MODEL_PATH, f".fhe_keys/{user_id}")
     fhe_api.load()
-
 
     # Generate a fresh key
     fhe_api.generate_private_and_evaluation_keys(force=True)
@@ -91,7 +92,7 @@ def encode_quantize_encrypt(text, user_id):
     numpy.save(f"tmp/tmp_encrypted_quantized_encoding_{user_id}.npy", encrypted_quantized_encoding)
 
     # Compute size
-    encrypted_quantized_encoding_shorten = list(encrypted_quantized_encoding)[:ENCRYPTED_DATA_BROWSER_LIMIT]
+    encrypted_quantized_encoding_shorten = list(encrypted_quantized_encoding)
     encrypted_quantized_encoding_shorten_hex = ''.join(f'{i:02x}' for i in encrypted_quantized_encoding_shorten)
     return (
         encodings[0],
@@ -126,16 +127,10 @@ def run_fhe(user_id):
     )
     encrypted_prediction = base64.b64decode(response.json()["encrypted_prediction"])
 
-    response = requests.post(
-        "http://localhost:8002/get_zk_proof", data=json.dumps(query), headers=headers
-    )
-    proof_path = base64.b64decode(response.json()["proof_path"])
-    print(f"proof_path: {proof_path}")
-
     # Save encrypted_prediction in a file, since too large to pass through regular Gradio
     # buttons, https://github.com/gradio-app/gradio/issues/1877
     numpy.save(f"tmp/tmp_encrypted_prediction_{user_id}.npy", encrypted_prediction)
-    encrypted_prediction_shorten = list(encrypted_prediction)[:ENCRYPTED_DATA_BROWSER_LIMIT]
+    encrypted_prediction_shorten = list(encrypted_prediction)
     encrypted_prediction_shorten_hex = ''.join(f'{i:02x}' for i in encrypted_prediction_shorten)
     return encrypted_prediction_shorten_hex
 
@@ -164,12 +159,57 @@ def decrypt_prediction(user_id):
     }
 
 
-demo = gr.Blocks()
+def get_zk_proof_non_encrypted(text):
+    headers = {"Content-type": "application/json"}
+    query = {"text": text}
+    response = requests.post(
+        "http://localhost:8001/get_zk_proof", data=json.dumps(query), headers=headers
+    )
+    result = response.json()
 
+    sentiment = ""
+    if result["output"][0] > 0.5:
+        sentiment = "negative"
+    elif result["output"][1] > 0.5:
+        sentiment = "neutral"
+    else:
+        sentiment = "positive"
+
+    return sentiment, result["proof"], result["verify_contract_addr"]
+
+
+def get_zk_proof_encrypted(user_id):
+    encoded_data_path = Path(f"tmp/tmp_encrypted_quantized_encoding_{user_id}.npy")
+    if not user_id:
+        raise gr.Error("You need to generate FHE keys first.")
+    if not encoded_data_path.is_file():
+        raise gr.Error("No encrypted data was found. Encrypt the data before trying to predict.")
+
+    # Read encrypted_quantized_encoding from the file
+    encrypted_quantized_encoding = numpy.load(encoded_data_path)
+
+    # Read evaluation_key from the file
+    evaluation_key = numpy.load(f"tmp/tmp_evaluation_key_{user_id}.npy")
+
+    # Use base64 to encode the encodings and evaluation key
+    encrypted_quantized_encoding = base64.b64encode(encrypted_quantized_encoding).decode()
+    encoded_evaluation_key = base64.b64encode(evaluation_key).decode()
+
+    query = {}
+    query["evaluation_key"] = encoded_evaluation_key
+    query["encrypted_encoding"] = encrypted_quantized_encoding
+    headers = {"Content-type": "application/json"}
+    response = requests.post(
+        "http://localhost:8002/get_zk_proof", data=json.dumps(query), headers=headers
+    )
+    result = response.json()
+    return result["output"], result["proof"], result["verify_contract_addr"]
+
+
+demo = gr.Blocks()
 
 print("Starting the demo...")
 with demo:
-
     gr.Markdown(
         """
 <p align="center">
@@ -194,7 +234,6 @@ with demo:
 """
     )
 
-
     gr.Markdown(
         """
         <p align="center">
@@ -206,10 +245,10 @@ with demo:
 
     gr.Markdown("## Notes")
     gr.Markdown(
+        """
+    - The private key is used to encrypt and decrypt the data and shall never be shared.
+    - The evaluation key is a public key that the server needs to process encrypted data.
     """
-- The private key is used to encrypt and decrypt the data and shall never be shared.
-- The evaluation key is a public key that the server needs to process encrypted data.
-"""
     )
 
     gr.Markdown("# Step 1: Generate the keys")
@@ -278,6 +317,54 @@ with demo:
 
     labels_sentiment = gr.Label(label="Sentiment:")
 
+    gr.Markdown("# Step 6: Get ZK Proof(non-encrypted input)")
+    gr.Markdown("## Server side")
+    gr.Markdown(
+        "Get zero-knowledge proof of the sentiment analysis computation (for non-encrypted input)."
+    )
+    b_get_zk_proof_non_encrypted = gr.Button("Get ZK Proof(non-encrypted input)")
+
+    with gr.Row():
+        zk_sentiment_non_encrypted = gr.Textbox(
+            label="Sentiment:",
+            max_lines=1,
+            interactive=False,
+        )
+        zk_proof_non_encrypted = gr.Textbox(
+            label="ZK Proof:",
+            max_lines=4,
+            interactive=False,
+        )
+        zk_contract_non_encrypted = gr.Textbox(
+            label="Verify Contract Address:",
+            max_lines=1,
+            interactive=False,
+        )
+
+    gr.Markdown("# Step 6: Get ZK Proof(encrypted input)")
+    gr.Markdown("## Server side")
+    gr.Markdown(
+        "Get zero-knowledge proof of the sentiment analysis computation (for encrypted input)."
+    )
+    b_get_zk_proof_encrypted = gr.Button("Get ZK Proof(encrypted input)")
+
+    with gr.Row():
+        zk_encrypted_prediction = gr.Textbox(
+            label="Encrypted Prediction(same as Step 4 output):",
+            max_lines=1,
+            interactive=False,
+        )
+        zk_proof_encrypted = gr.Textbox(
+            label="ZK Proof:",
+            max_lines=4,
+            interactive=False,
+        )
+        zk_contract_encrypted = gr.Textbox(
+            label="Verify Contract Address:",
+            max_lines=1,
+            interactive=False,
+        )
+
     # Button for key generation
     b_gen_key_and_install.click(keygen, inputs=[], outputs=[evaluation_key, user_id])
 
@@ -297,6 +384,16 @@ with demo:
 
     # Button to decrypt the prediction on the client
     b_decrypt_prediction.click(decrypt_prediction, inputs=[user_id], outputs=[labels_sentiment])
+
+    # Button to get ZK proof(non encrypted)
+    b_get_zk_proof_non_encrypted.click(get_zk_proof_non_encrypted, inputs=[text],
+                                       outputs=[zk_sentiment_non_encrypted, zk_proof_non_encrypted,
+                                                zk_contract_non_encrypted])
+
+    # Button to get ZK proof(encrypted)
+    b_get_zk_proof_encrypted.click(get_zk_proof_encrypted, inputs=[user_id],
+                                   outputs=[zk_encrypted_prediction, zk_proof_encrypted, zk_contract_encrypted])
+
     gr.Markdown(
         "The app was built with [Concrete-ML](https://github.com/zama-ai/concrete-ml), a Privacy-Preserving Machine Learning (PPML) open-source set of tools by [Zama](https://zama.ai/). Try it yourself and don't forget to star on Github &#11088;."
     )

@@ -39,6 +39,24 @@ pip3 install more-itertools
 Check it finish well (with a "Done!"). Please note that the actual model initialization and training 
 can be found in the [SentimentClassification notebook](SentimentClassification.ipynb) (see below).
 
+### Launch testnet
+
+```bash
+anvil -p 3030
+```
+
+### Launch zkml server
+
+```bash
+source .venv/bin/activate
+python3 zkml_encrypted.py
+```
+
+```bash
+source .venv/bin/activate
+python3 zkml_non_encrypted.py
+```
+
 ### Launch the app locally
 
 - In a terminal:

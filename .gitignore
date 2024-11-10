@@ -5,4 +5,5 @@ tmp/
 local_datasets/
 .vscode/
 /.idea
-/zkml_data
+/zkml_encrypted
+/zkml_non_encrypted
