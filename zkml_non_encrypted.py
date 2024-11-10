@@ -64,15 +64,11 @@ class AIWordsModel(nn.Module):
         print(f"loaded_data finished")
 
     def forward(self, x):
-        print(f"forward input: {x}")
-
         prediction = self.best_model2.predict_proba(x, fhe="execute")
-        print(f"prediction: {prediction}")
 
         prediction_tensor = torch.tensor(prediction, dtype=torch.float32)
         prediction_tensor = prediction_tensor.squeeze()  # Remove extra dimensions if any
 
-        print(f"tensor_output: {prediction_tensor}")
         return prediction_tensor
 
     # Function to convert text to tensor
@@ -128,7 +124,6 @@ async def get_zk_proof(request: ZKProofRequest):
     with open(output_path, 'w') as f:
         json.dump(output_data, f)
 
-    print("start")
     # Export the model
     torch.onnx.export(circuit,  # model being run
                       x,  # model input (or a tuple for multiple inputs)
@@ -140,7 +135,6 @@ async def get_zk_proof(request: ZKProofRequest):
                       output_names=['output'],  # the model's output names
                       dynamic_axes={'input': {0: 'batch_size'},  # variable length axes
                                     'output': {0: 'batch_size'}})
-    print("end")
 
     data = dict(input_data=x.tolist())
 
@@ -224,7 +218,7 @@ async def get_zk_proof(request: ZKProofRequest):
     )
     assert res is True
     verify_contract_addr_file = f"{folder_path}/addr.txt"
-    rpc_url = "http://127.0.0.1:3030"
+    rpc_url = "http://103.231.86.33:10219"
     await ezkl.deploy_evm(
         addr_path=verify_contract_addr_file,
         rpc_url=rpc_url,
