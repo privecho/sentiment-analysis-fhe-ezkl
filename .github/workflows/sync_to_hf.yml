@@ -27,11 +27,11 @@ jobs:
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: |
         # Configure git
-        git config --global user.email "myronzhangweb@gmail.com"
+        git config --global user.email "myronzhangweb3@gmail.com"
         git config --global user.name "Myron Zhang"
 
         # Clone the Hugging Face repository
-        git clone https://huggingface.co/spaces/PrivEcho/encrypted_sentiment_analysis hf_repo
+        git clone https://$HF_TOKEN@huggingface.co/spaces/PrivEcho/encrypted_sentiment_analysis hf_repo
         cd hf_repo
 
         # Copy files from the GitHub repository
