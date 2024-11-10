@@ -1,0 +1,43 @@
+name: Sync to Hugging Face
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'  # Specify your Python version
+
+    - name: Install dependencies
+      run: |
+        pip install huggingface_hub
+
+    - name: Sync to Hugging Face
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        # Configure git
+        git config --global user.email "myronzhangweb@gmail.com"
+        git config --global user.name "Myron Zhang"
+
+        # Clone the Hugging Face repository
+        git clone https://huggingface.co/PrivEcho/encrypted_sentiment_analysis hf_repo
+        cd hf_repo
+
+        # Copy files from the GitHub repository
+        rsync -av --exclude='.git' ../ .
+
+        # Commit and push changes to Hugging Face
+        git add .
+        git commit -m "Sync from GitHub"
+        git push
