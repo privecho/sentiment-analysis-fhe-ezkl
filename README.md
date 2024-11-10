@@ -39,12 +39,6 @@ pip3 install more-itertools
 Check it finish well (with a "Done!"). Please note that the actual model initialization and training 
 can be found in the [SentimentClassification notebook](SentimentClassification.ipynb) (see below).
 
-### Launch testnet
-
-```bash
-anvil -p 3030
-```
-
 ### Launch the app locally
 
 - In a terminal:

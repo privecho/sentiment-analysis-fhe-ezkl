@@ -31,7 +31,7 @@ jobs:
         git config --global user.name "Myron Zhang"
 
         # Clone the Hugging Face repository
-        git clone https://huggingface.co/PrivEcho/encrypted_sentiment_analysis hf_repo
+        git clone https://huggingface.co/spaces/PrivEcho/encrypted_sentiment_analysis hf_repo
         cd hf_repo
 
         # Copy files from the GitHub repository
