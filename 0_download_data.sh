@@ -7,7 +7,7 @@ set -e
 # Alternatively, the dataset can be downloaded manually at 
 # https://www.kaggle.com/datasets/crowdflower/twitter-airline-sentiment
 rm -rf local_datasets
-mkdir dataset/local_datasets
+mkdir -p dataset/local_datasets
 cd dataset/local_datasets
 
 kaggle datasets download -d crowdflower/twitter-airline-sentiment
