@@ -20,8 +20,8 @@ subprocess.Popen(["uvicorn", "fhe_server:app", "--port", "8000"], cwd=REPO_DIR)
 subprocess.Popen(["uvicorn", "zkml_non_encrypted_server:app", "--port", "8001"], cwd=REPO_DIR)
 subprocess.Popen(["uvicorn", "zkml_encrypted_server:app", "--port", "8002"], cwd=REPO_DIR)
 
-# Wait 30 sec for the server to start
-time.sleep(30)
+# Wait 5 sec for the server to start
+time.sleep(5)
 
 # Encrypted data limit for the browser to display
 # (encrypted data is too large to display in the browser)
