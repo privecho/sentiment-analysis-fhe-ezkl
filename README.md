@@ -13,7 +13,7 @@ python_version: 3.10.11
 
 # Sentiment Analysis With FHE
 
-## Set up the app locally
+## Launch locally
 
 - First, create a virtual env and activate it:
 
@@ -46,7 +46,8 @@ pip3 install kaggle
 ### Compile
 
 ```bash
-python3 1_build/main.py
+cd 1_build
+python3 main.py
 ```
 
 
@@ -55,10 +56,11 @@ python3 1_build/main.py
 - In a terminal:
 
 ```bash
-python3 2_run/app.py
+cd 2_run
+python3 app.py
 ```
 
-## Launch the app with docker
+## Launch docker
 
 TODO
 

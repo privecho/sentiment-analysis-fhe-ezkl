@@ -27,7 +27,7 @@ time.sleep(30)
 # (encrypted data is too large to display in the browser)
 ENCRYPTED_DATA_BROWSER_LIMIT = 500
 N_USER_KEY_STORED = 20
-FHE_MODEL_PATH = "deployment/sentiment_fhe_model"
+FHE_MODEL_PATH = "../deployment/sentiment_fhe_model"
 
 print("Loading the transformer model...")
 
@@ -324,7 +324,7 @@ with demo:
 
     labels_sentiment = gr.Label(label="Sentiment:")
 
-    gr.Markdown("# Step 6: Get ZK Proof(non-encrypted input, Coming Soon)")
+    gr.Markdown("# Step 6: Get ZK Proof(non-encrypted input)")
     gr.Markdown("## Server side")
     gr.Markdown(
         "Get zero-knowledge proof of the sentiment analysis computation (for non-encrypted input)."
@@ -348,7 +348,7 @@ with demo:
             interactive=False,
         )
 
-    gr.Markdown("# Step 6: Get ZK Proof(encrypted input)")
+    gr.Markdown("# Step 6: Get ZK Proof(encrypted input, Coming Soon)")
     gr.Markdown("## Server side")
     gr.Markdown(
         "Get zero-knowledge proof of the sentiment analysis computation (for encrypted input)."
