@@ -8,7 +8,7 @@ sdk_version: 4.44.0
 app_file: app.py
 pinned: true
 tags: [FHE, PPML, privacy, privacy preserving machine learning, homomorphic encryption, security]
-python_version: 3.9.6
+python_version: 3.10.11
 ---
 
 # Sentiment Analysis With FHE
@@ -18,8 +18,8 @@ python_version: 3.9.6
 - First, create a virtual env and activate it:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
+conda create --name sentiment_analysis_demo python=3.10.11
+conda activate sentiment_analysis_demo
 ```
 
 - Then, install required packages:
@@ -28,31 +28,38 @@ source .venv/bin/activate
 pip3 install pip --upgrade
 pip3 install -U pip wheel setuptools --ignore-installed
 pip3 install -r requirements.txt --ignore-installed
-
-# mac z3
-brew install z3
-pip3 uninstall z3-solver
-pip3 install z3-solver
-pip3 install more-itertools
 ```
 
 Check it finish well (with a "Done!"). Please note that the actual model initialization and training 
 can be found in the [SentimentClassification notebook](SentimentClassification.ipynb) (see below).
+
+## Compile the FHE algorithm
+
+### Download data
+
+```shell
+pip3 install kaggle
+./0_download_data.sh
+```
+
+### Compile
+
+```bash
+python3 1_build/main.py
+```
+
 
 ### Launch the app locally
 
 - In a terminal:
 
 ```bash
-source .venv/bin/activate
-python3 app.py
+python3 2_run/app.py
 ```
 
 ## Launch the app with docker
 
-```bash
-docker compose up --build
-```
+TODO
 
 ## Interact with the application
 

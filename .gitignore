@@ -6,4 +6,8 @@ tmp/
 /.idea
 /zkml_encrypted
 /zkml_non_encrypted
-docker-compose.yml
+docker/3_run/docker-compose.yml
+/dataset/
+/2_run/zkml_encrypted/
+/2_run/zkml_non_encrypted/
+/deployment/
