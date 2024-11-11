@@ -133,7 +133,7 @@ def run_fhe(user_id):
     # Save encrypted_prediction in a file, since too large to pass through regular Gradio
     # buttons, https://github.com/gradio-app/gradio/issues/1877
     numpy.save(f"tmp/tmp_encrypted_prediction_{user_id}.npy", encrypted_prediction)
-    encrypted_prediction_shorten = list(encrypted_prediction)
+    encrypted_prediction_shorten = list(encrypted_prediction)[:ENCRYPTED_DATA_BROWSER_LIMIT]
     encrypted_prediction_shorten_hex = ''.join(f'{i:02x}' for i in encrypted_prediction_shorten)
     return encrypted_prediction_shorten_hex
 
