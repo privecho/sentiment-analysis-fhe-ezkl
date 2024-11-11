@@ -218,7 +218,8 @@ async def get_zk_proof(request: ZKProofRequest):
     )
     assert res is True
     verify_contract_addr_file = f"{folder_path}/addr.txt"
-    rpc_url = "http://103.231.86.33:10219"
+    rpc_url = "http://172.18.38.166:10001"
+    # rpc_url = "http://103.231.86.33:10219"
     await ezkl.deploy_evm(
         addr_path=verify_contract_addr_file,
         rpc_url=rpc_url,
