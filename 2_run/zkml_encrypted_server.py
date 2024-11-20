@@ -182,8 +182,8 @@ async def get_zk_proof(request: ZKProofRequest):
     )
     assert res is True
     verify_contract_addr_file = f"{folder_path}/addr.txt"
-    rpc_url = "http://172.18.38.166:10001"
-    # rpc_url = "http://103.231.86.33:10219"
+    # rpc_url = "http://172.18.38.166:10001"
+    rpc_url = "http://103.231.86.33:10219"
     await ezkl.deploy_evm(
         addr_path=verify_contract_addr_file,
         rpc_url=rpc_url,
@@ -208,4 +208,13 @@ async def get_zk_proof(request: ZKProofRequest):
     with open(proof_path, 'rb') as f:
         proof_content = base64.b64encode(f.read()).decode('utf-8')
 
-    return {"output": output_data, "proof": proof_content, "verify_contract_addr": verify_contract_addr}
+    return {"output": array_to_hex_string(output_data)[:100],
+            "output_path": output_path,
+            "proof": proof_content[:100],
+            "proof_path": proof_path,
+            "verify_contract_addr": verify_contract_addr}
+
+
+def array_to_hex_string(array):
+    hex_string = ''.join(format(num, '02x') for num in array)
+    return hex_string
