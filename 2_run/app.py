@@ -348,7 +348,7 @@ with demo:
             interactive=False,
         )
 
-    gr.Markdown("# Step 7: Get ZK Proof(encrypted input, Coming Soon)")
+    gr.Markdown("# Step 7: Get ZK Proof(encrypted input)")
     gr.Markdown("## Server side")
     gr.Markdown(
         "Get zero-knowledge proof of the sentiment analysis computation (for encrypted input)."
