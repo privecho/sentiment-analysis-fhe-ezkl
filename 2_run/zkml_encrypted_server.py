@@ -87,7 +87,6 @@ async def get_zk_proof(request: ZKProofRequest):
     with open(output_path, 'w') as f:
         json.dump(output_data, f)
 
-    print("start")
     # Export the model
     torch.onnx.export(circuit,  # model being 2_run
                       x,  # model input (or a tuple for multiple inputs)
@@ -99,7 +98,6 @@ async def get_zk_proof(request: ZKProofRequest):
                       output_names=['output'],  # the model's output names
                       dynamic_axes={'input': {0: 'batch_size'},  # variable length axes
                                     'output': {0: 'batch_size'}})
-    print("end")
 
     data = dict(input_data=x.tolist())
 
