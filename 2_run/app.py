@@ -223,20 +223,10 @@ with demo:
     <img width=200 src="https://user-images.githubusercontent.com/5758427/197816413-d9cddad3-ba38-4793-847d-120975e1da11.png">
 </p>
 
-<h2 align="center">Sentiment Analysis On Encrypted Data Using Homomorphic Encryption</h2>
+<h2 align="center">Sentiment Analysis On Encrypted Data Using Homomorphic Encryption And EZKL</h2>
 
 <p align="center">
-    <a href="https://github.com/zama-ai/concrete-ml"> <img style="vertical-align: middle; display:inline-block; margin-right: 3px;" width=15 src="https://user-images.githubusercontent.com/5758427/197972109-faaaff3e-10e2-4ab6-80f5-7531f7cfb08f.png">Concrete-ML</a>
-    —
-    <a href="https://docs.zama.ai/concrete-ml"> <img style="vertical-align: middle; display:inline-block; margin-right: 3px;" width=15 src="https://user-images.githubusercontent.com/5758427/197976802-fddd34c5-f59a-48d0-9bff-7ad1b00cb1fb.png">Documentation</a>
-    —
-    <a href="https://zama.ai/community"> <img style="vertical-align: middle; display:inline-block; margin-right: 3px;" width=15 src="https://user-images.githubusercontent.com/5758427/197977153-8c9c01a7-451a-4993-8e10-5a6ed5343d02.png">Community</a>
-    —
-    <a href="https://twitter.com/zama_fhe"> <img style="vertical-align: middle; display:inline-block; margin-right: 3px;" width=15 src="https://user-images.githubusercontent.com/5758427/197975044-bab9d199-e120-433b-b3be-abd73b211a54.png">@zama_fhe</a>
-</p>
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/56846628/219329304-6868be9e-5ce8-4279-9123-4cb1bc0c2fb5.png" width="60%" height="60%">
+  <img src="https://privecho.web3idea.xyz/images/sentiment-analysis.png" width="60%" height="60%">
 </p>
 """
     )
@@ -401,7 +391,4 @@ with demo:
     b_get_zk_proof_encrypted.click(get_zk_proof_encrypted, inputs=[user_id],
                                    outputs=[zk_encrypted_prediction, zk_proof_encrypted, zk_contract_encrypted])
 
-    gr.Markdown(
-        "The app was built with [Concrete-ML](https://github.com/zama-ai/concrete-ml), a Privacy-Preserving Machine Learning (PPML) open-source set of tools by [Zama](https://zama.ai/). Try it yourself and don't forget to star on Github &#11088;."
-    )
 demo.launch(share=False, server_name="0.0.0.0", server_port=10003)

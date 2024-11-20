@@ -18,7 +18,6 @@ python_version: 3.10.11
 - First, create a virtual env and activate it:
 
 ```bash
-source ~/anaconda3/bin/activate
 conda create --name sentiment_analysis_demo python=3.10.11
 conda activate sentiment_analysis_demo
 ```
