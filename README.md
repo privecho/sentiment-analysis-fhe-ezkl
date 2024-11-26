@@ -11,7 +11,7 @@ tags: [FHE, EZKL, PPML, privacy, privacy preserving machine learning, homomorphi
 python_version: 3.10.11
 ---
 
-# Sentiment Analysis With FHE
+# Sentiment Analysis With FHE And EZKL
 
 ## Launch locally
 
