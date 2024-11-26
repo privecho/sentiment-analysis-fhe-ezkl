@@ -1,5 +1,5 @@
 ---
-title: Sentiment Analysis On Encrypted Data Using Fully Homomorphic Encryption
+title: Sentiment Analysis On Encrypted Data Using Fully Homomorphic Encryption And EZKL
 emoji: 🥷💬
 colorFrom: yellow
 colorTo: yellow
@@ -7,7 +7,7 @@ sdk: gradio
 sdk_version: 4.44.0
 app_file: app.py
 pinned: true
-tags: [FHE, PPML, privacy, privacy preserving machine learning, homomorphic encryption, security]
+tags: [FHE, EZKL, PPML, privacy, privacy preserving machine learning, homomorphic encryption, security]
 python_version: 3.10.11
 ---
 
