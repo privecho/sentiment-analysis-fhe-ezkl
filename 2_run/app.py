@@ -13,6 +13,9 @@ import subprocess
 import shutil
 import time
 
+os.environ['ENABLE_ICICLE_GPU'] = 'true'
+os.environ['RUST_BACKTRACE']='full'
+
 # This repository's directory
 REPO_DIR = Path(__file__).parent
 
