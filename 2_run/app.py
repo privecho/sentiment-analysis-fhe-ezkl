@@ -12,9 +12,12 @@ import base64
 import subprocess
 import shutil
 import time
+import config
 
-os.environ['ENABLE_ICICLE_GPU'] = 'true'
-os.environ['RUST_BACKTRACE']='full'
+if config.gpu_enable:
+    print("gpu enable")
+    os.environ['ENABLE_ICICLE_GPU'] = 'true'
+    os.environ['RUST_BACKTRACE'] = 'full'
 
 # This repository's directory
 REPO_DIR = Path(__file__).parent

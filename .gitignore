@@ -11,3 +11,4 @@ docker/3_run/docker-compose.yml
 /2_run/zkml_encrypted/
 /2_run/zkml_non_encrypted/
 /deployment/
+/2_run/config.py
