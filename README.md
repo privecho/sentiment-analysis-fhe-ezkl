@@ -55,8 +55,8 @@ python3 main.py
 - In a terminal:
 
 ```bash
-cp config.py.example config.py
 cd 2_run
+cp ../config.py.example config.py
 python3 app.py
 ```
 
