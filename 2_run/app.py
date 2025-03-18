@@ -22,9 +22,9 @@ if config.gpu_enable:
 # This repository's directory
 REPO_DIR = Path(__file__).parent
 
-subprocess.Popen(["uvicorn", "fhe_server:app", "--port", "8000"], cwd=REPO_DIR)
-subprocess.Popen(["uvicorn", "zkml_non_encrypted_server:app", "--port", "8001"], cwd=REPO_DIR)
-subprocess.Popen(["uvicorn", "zkml_encrypted_server:app", "--port", "8002"], cwd=REPO_DIR)
+subprocess.Popen(["uvicorn", "fhe_server:app", "--port", "8080"], cwd=REPO_DIR)
+subprocess.Popen(["uvicorn", "zkml_non_encrypted_server:app", "--port", "8081"], cwd=REPO_DIR)
+subprocess.Popen(["uvicorn", "zkml_encrypted_server:app", "--port", "8082"], cwd=REPO_DIR)
 
 # Wait 5 sec for the server to start
 time.sleep(5)
@@ -132,7 +132,7 @@ def run_fhe(user_id):
     query["encrypted_encoding"] = encrypted_quantized_encoding
     headers = {"Content-type": "application/json"}
     response = requests.post(
-        "http://localhost:8000/predict_sentiment", data=json.dumps(query), headers=headers
+        "http://localhost:8080/predict_sentiment", data=json.dumps(query), headers=headers
     )
     encrypted_prediction = base64.b64decode(response.json()["encrypted_prediction"])
 
@@ -172,7 +172,7 @@ def get_zk_proof_non_encrypted(text):
     headers = {"Content-type": "application/json"}
     query = {"text": text}
     response = requests.post(
-        "http://localhost:8001/get_zk_proof", data=json.dumps(query), headers=headers
+        "http://localhost:8081/get_zk_proof", data=json.dumps(query), headers=headers
     )
     result = response.json()
 
@@ -209,7 +209,7 @@ def get_zk_proof_encrypted(user_id):
     query["encrypted_encoding"] = encrypted_quantized_encoding
     headers = {"Content-type": "application/json"}
     response = requests.post(
-        "http://localhost:8002/get_zk_proof", data=json.dumps(query), headers=headers
+        "http://localhost:8082/get_zk_proof", data=json.dumps(query), headers=headers
     )
     result = response.json()
     return result["output"], result["proof"], result["verify_contract_addr"]
