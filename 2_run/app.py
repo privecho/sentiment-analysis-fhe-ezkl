@@ -339,7 +339,7 @@ with demo:
             interactive=False,
         )
         zk_contract_non_encrypted = gr.Textbox(
-            label="Verify Contract Address:",
+            label=f"Verify Contract Address: ({config.chain_name})",
             max_lines=1,
             interactive=False,
         )
@@ -363,7 +363,7 @@ with demo:
             interactive=False,
         )
         zk_contract_encrypted = gr.Textbox(
-            label="Verify Contract Address:",
+            label=f"Verify Contract Address: ({config.chain_name})",
             max_lines=1,
             interactive=False,
         )
@@ -397,4 +397,4 @@ with demo:
     b_get_zk_proof_encrypted.click(get_zk_proof_encrypted, inputs=[user_id],
                                    outputs=[zk_encrypted_prediction, zk_proof_encrypted, zk_contract_encrypted])
 
-demo.launch(share=False, server_name="0.0.0.0", server_port=10003)
+demo.launch(share=False, server_name="127.0.0.1", server_port=config.port)

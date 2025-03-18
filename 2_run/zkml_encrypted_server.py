@@ -14,7 +14,7 @@ from concrete.ml.deployment import FHEModelServer
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from config import rpc_url
+from config import rpc_url, private_key
 
 app = FastAPI()
 
@@ -187,6 +187,7 @@ async def get_zk_proof(request: ZKProofRequest):
     await ezkl.deploy_evm(
         addr_path=verify_contract_addr_file,
         rpc_url=rpc_url,
+        private_key=private_key,
         sol_code_path=verify_sol_code_path
     )
     if os.path.exists(verify_contract_addr_file):
